@@ -1,0 +1,219 @@
+<div class="p-non-exfoliate-outer-padding">
+  {{#if details.results}}
+  {{#each details.results as |result| }}
+
+  {{#if result.threat_level}}
+    <div>
+       <span class="p-key"> Threat Level: </span>
+       <span class="p-value">{{result.threat_level}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.threat_name}}
+    <div>
+       <span class="p-key"> Threat Name: </span>
+       <span class="p-value">{{result.threat_name}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.threat_status}}
+    <div>
+       <span class="p-key"> Threat Status: </span>
+       <span class="p-value">{{result.threat_status}}</span>
+    </div>
+  {{/if}}
+
+
+
+  {{#if result.classification_reason}}
+    <div>
+       <span class="p-key"> Classification Reasion: </span>
+       <span class="p-value">{{result.classification_reason}}</span>
+    </div>
+  {{/if}}
+
+
+
+  {{#if result.category}}
+    <div>
+       <span class="p-key"> Category: </span>
+       <span class="p-value">{{result.category}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.file_type}}
+    <div>
+       <span class="p-key"> File Type: </span>
+       <span class="p-value">{{result.file_type}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.identification_name}}
+    <div>
+       <span class="p-key"> Identification Name: </span>
+       <span class="p-value">{{result.identification_name}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.extracted_file_count}}
+    <div>
+       <span class="p-key"> Extracted File Count: </span>
+       <span class="p-value">{{result.extracted_file_count}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.local_first_seen}}
+    <div>
+       <span class="p-key"> First Seen: </span>
+       <span class="p-value">{{moment-time result.local_first_seen}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.local_last_seen}}
+    <div>
+       <span class="p-key"> Last Seen: </span>
+       <span class="p-value">{{moment-time result.local_last_seen}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.ticloud}}
+
+  <h1 class="p-title">
+      <i class="fa fa-fw fa-server"></i> TiCloud Information
+  </h1>
+
+  {{#if result.ticloud.threat_status}}
+    <div>
+       <span class="p-key"> Threat Status: </span>
+       <span class="p-value">{{result.ticloud.threat_status}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.ticloud.trust_factor}}
+    <div>
+       <span class="p-key"> Trust Factor: </span>
+       <span class="p-value">{{result.ticloud.trust_factor}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.ticloud.threat_level}}
+    <div>
+       <span class="p-key"> Threat Level: </span>
+       <span class="p-value">{{result.ticloud.threat_level}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.ticloud.first_seen}}
+    <div>
+       <span class="p-key"> First Seen: </span>
+       <span class="p-value">{{result.ticloud.first_seen}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.ticloud.last_seen}}
+    <div>
+       <span class="p-key"> Last Seen: </span>
+       <span class="p-value">{{result.ticloud.last_seen}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.ticloud.threat_name}}
+    <div>
+       <span class="p-key"> Threat Name: </span>
+       <span class="p-value">{{result.ticloud.threat_name}}</span>
+    </div>
+  {{/if}}
+  {{/if}}
+
+
+  {{#if result.ticore}}
+
+  <h1 class="p-title">
+      <i class="fa fa-fw fa-server"></i> TiCore Information
+  </h1>
+
+  {{#if result.ticore.info.identification}}
+    {{#if result.ticore.info.identification.version}}
+    <div>
+       <span class="p-key"> Version: </span>
+       <span class="p-value">{{result.ticore.info.identification.version}}</span>
+    </div>
+    {{/if}}
+
+    {{#if result.ticore.info.identification.name}}
+    <div>
+       <span class="p-key"> Name: </span>
+       <span class="p-value">{{result.ticore.info.identification.name}}</span>
+    </div>
+    {{/if}}
+
+    {{#if result.ticore.info.identification.success}}
+    <div>
+       <span class="p-key"> Success: </span>
+       <span class="p-value">{{result.ticore.info.identification.success}}</span>
+    </div>
+    {{/if}}
+
+    {{#if result.ticore.info.identification.author}}
+    <div>
+       <span class="p-key"> Author: </span>
+       <span class="p-value">{{result.ticore.info.identification.author}}</span>
+    </div>
+    {{/if}}
+  {{/if}}
+
+  {{#if result.ticore.story}}
+    <div>
+       <span class="p-key"> Story: </span>
+       <span class="p-value">{{result.ticore.story}}</span>
+    </div>
+  {{/if}}
+
+  {{#if result.ticore.info.package.properties}}
+    <span class="p-key"> Properties: </span>
+    <div class="tags">
+        {{#each (limit result.ticore.info.package.properties maxProperties) as |properties|}}
+            <span class="pulse-tag">{{properties.name}} {{properties.value}} </span>
+        {{/each}}
+    </div>
+  {{/if}}
+
+  {{#if result.ticore.classification.yara}}
+    <span class="p-key"> Classification: </span>
+    <div class="tags">
+        {{#each (limit result.ticore.classification.yara maxProperties) as |yaras|}}
+            <span class="pulse-tag">{{yaras.ns}} </span>
+            <span class="pulse-tag">{{yaras.identifier}} </span>
+        {{/each}}
+    </div>
+  {{/if}}
+
+  {{#if result.ticore.application.pe.imports}}
+    <span class="p-key"> Import Names: </span>
+    <div class="tags">
+        {{#each (limit result.ticore.application.pe.imports maxProperties) as |imports|}}
+            <span class="pulse-tag">{{imports.name}} </span>
+
+        {{/each}}
+    </div>
+  {{/if}}
+
+  {{/if}}
+
+  {{#if result.aliases}}
+      <h1 class="p-title">
+          <i class="fa fa-fw fa-server"></i> Aliases
+      </h1>
+
+      <div class="tags">
+          {{#each result.aliases as |alias|}}
+              <span class="pulse-tag">{{alias}}</span>
+          {{/each}}
+      </div>
+  {{/if}}
+
+
+
+{{/each}}
+{{/if}}
+</div>
