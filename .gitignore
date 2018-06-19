@@ -27,3 +27,5 @@ README.html
 
 # Ignored installed NPM modules
 node_modules/
+
+.polarity.conf

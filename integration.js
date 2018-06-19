@@ -12,11 +12,9 @@ let requestWithDefaults;
 
 const authTokens = new Map();
 
-
 function startup(logger) {
     Logger = logger;
     let defaults = {};
-
 
     if (typeof config.request.cert === 'string' && config.request.cert.length > 0) {
         defaults.cert = fs.readFileSync(config.request.cert);
@@ -45,14 +43,14 @@ function startup(logger) {
     requestWithDefaults = request.defaults(defaults);
 }
 
-function _createAuthKey(options){
+function _createAuthKey(options) {
     return options.username + options.password;
 }
 
 var createToken = function (options, cb) {
     let authKey = _createAuthKey(options);
-    if(authTokens.has(authKey)){
-        Logger.trace({user: options.username}, 'Using Cached Auth Token');
+    if (authTokens.has(authKey)) {
+        Logger.trace({ user: options.username }, 'Using Cached Auth Token');
         cb(null, authTokens.get(authKey));
         return;
     }
@@ -73,7 +71,7 @@ var createToken = function (options, cb) {
             cb(errorObject);
             return;
         }
-        Logger.trace({body: response.body.token}, "Checking the token body");
+        Logger.trace({ body: response.body.token }, "Checking the token body");
         let authToken = response.body.token;
         authTokens.set(authKey, authToken);
         cb(null, authToken);
@@ -81,281 +79,143 @@ var createToken = function (options, cb) {
 };
 
 function doLookup(entities, options, cb) {
-
-    Logger.debug({options: options}, 'Options');
-
+    Logger.debug({ options: options }, 'Options');
 
     let lookupResults = [];
     let entityObj = entities;
 
     createToken(options, function (err, token) {
+        Logger.trace('create token successful');
 
-        async.each(entities, function (entityObj, next) {
-            if (entityObj.isSHA1 && options.lookupSha1) {
-                _lookupEntitySHA1(entityObj, options, token, function (err, result) {
-                    if (err) {
-                        next(err);
-                    } else {
-                        Logger.debug({results: result}, "Logging SHA1 Results");
-                        lookupResults.push(result);
-                        next(null);
-                    }
-                });
-            } else if (entityObj.isSHA256 && options.lookupSha256) {
-                _lookupEntitySHA256(entityObj, options, token, function (err, result) {
-                    if (err) {
-                        next(err);
-                    } else {
-                        Logger.debug({results: result}, "Logging SHA256 Results");
-                        lookupResults.push(result);
-                        next(null);
-                    }
-                });
-            } else if (entityObj.isMD5 && options.lookupMd5) {
-                _lookupEntityMD5(entityObj, options, token, function (err, result) {
-                    if (err) {
-                        next(err);
-                    } else {
-                        Logger.debug({results: result}, "Logging MD5 Results");
-                        lookupResults.push(result);
-                        next(null);
-                    }
-                });
-            } else {
-                lookupResults.push({entity: entityObj, data: null}); //Cache the missed results
-                next(null);
-            }
-        }, function (err) {
+        let sha1Entities = entities.filter(entity => entity.isSHA1);
+        let sha256Entities = entities.filter(entity => entity.isSHA256);
+        let md5Entities = entities.filter(entity => entity.isMD5);
+        let nonHashEntities = entities.filter(entity => !entity.isHash);
+        nonHashEntities.forEach(entity => {
+            lookupResults.push({ entity: entity, data: null }); // Cache the missed results
+        });
+
+        Logger.trace('parallel requests starting');
+        async.parallel([
+            (next) => {
+                _lookupEntities(md5Entities, 'md5', options, token, next);
+            },
+            (next) => {
+                _lookupEntities(sha1Entities, 'sha1', options, token, next);
+            },
+            (next) => {
+                _lookupEntities(sha256Entities, 'sha256', options, token, next);
+            },
+        ], (err, results) => {
+            results.forEach(result => {
+                lookupResults = lookupResults.concat(result);
+            });
+
+            Logger.trace('results sent to client', JSON.stringify(lookupResults));
             cb(err, lookupResults);
         });
+    }, function (err) {
+        Logger.trace('results sent to client', lookupResults);
+        cb(err, lookupResults);
     });
 }
 
-function _lookupEntitySHA1(entityObj, options, token, cb) {
+// Entity type should be sha1, sha256, or md5
+function _lookupEntities(entityObjs, entityType, options, token, cb) {
+    Logger.trace('entity lookup starting');
+
     let requestOptions = {
         uri: options.url + '/api/samples/list/',
         method: 'POST',
-        headers: {'Authorization': 'Token ' + token},
+        headers: { 'Authorization': 'Token ' + token },
         body: {
-              "hash_values": [entityObj.value],
-              "fields": ["sha1",
-              "category",
-              "ticore",
-              "ticloud",
-              "summary",
-              "aliases",
-              "file_type",
-              "identification_name",
-              "extracted_file_count",
-          "threat_status",
-          "threat_level",
-          "threat_name",
-          "trust_factor",
-          "classification_reason",
-          "local_first_seen",
-          "local_last_seen"
-        ]
-      },
+            "hash_values": entityObjs.map(entity => entity.value),
+            "fields": [entityType,
+                "category",
+                "ticore",
+                "ticloud",
+                "summary",
+                "aliases",
+                "file_type",
+                "identification_name",
+                "extracted_file_count",
+                "threat_status",
+                "threat_level",
+                "threat_name",
+                "trust_factor",
+                "classification_reason",
+                "local_first_seen",
+                "local_last_seen"
+            ]
+        },
         json: true
     };
 
-
     requestWithDefaults(requestOptions, function (err, response, body) {
-        let errorObject = _isApiError(err, response, body, entityObj.value);
+        let errorObject = _isApiError(err, response, body, entityObjs.map(entity => entity.value));
         if (errorObject) {
             cb(errorObject);
             return;
         }
 
-        //Logger.debug({data: body.content[0]}, "Logging Body Data");
-        if (_.isNull(body) || _.isEmpty(body.results)){
-          cb(null, {
-              entity: entityObj,
-              data: null
-          });
-          return;
-        }
-
-        let threatData = [];
-
-        body.results.forEach(function(result){
-          threatData.push(result.threat_name),
-          threatData.push(result.threat_status)
-        });
-
-        Logger.trace({threatData: threatData}, "ThreatData");
-
-        if (_isLookupMiss(response)) {
-            cb(null, {
-                entity: entityObj,
-                data: null
-            });
-            return;
-        }
-
-
-        // The lookup results returned is an array of lookup objects with the following format
-        cb(null, {
-            // Required: This is the entity object passed into the integration doLookup method
-            entity: entityObj,
-            // Required: An object containing everything you want passed to the template
-            data: {
-                // We are constructing the tags using a custom summary block so no data needs to be passed here
-                summary: threatData,
-                // Data that you want to pass back to the notification window details block
-                details: body
-            }
-        });
-    });
-}
-
-function _lookupEntitySHA256(entityObj, options, token, cb) {
-    let requestOptions = {
-        uri: options.url + '/api/samples/list/',
-        method: 'POST',
-        headers: {'Authorization': 'Token ' + token},
-        body: {
-              "hash_values": [entityObj.value],
-              "fields": ["sha256",
-              "category",
-              "ticore",
-              "ticloud",
-              "summary",
-              "aliases",
-              "file_type",
-              "identification_name",
-              "extracted_file_count",
-          "threat_status",
-          "threat_level",
-          "threat_name",
-          "trust_factor",
-          "classification_reason",
-          "local_first_seen",
-          "local_last_seen"
-        ]
-      },
-        json: true
-    };
-
-
-    requestWithDefaults(requestOptions, function (err, response, body) {
-        let errorObject = _isApiError(err, response, body, entityObj.value);
-        if (errorObject) {
-            cb(errorObject);
-            return;
-        }
-
-        //Logger.debug({data: body.content[0]}, "Logging Body Data");
-        if (_.isNull(body) || _.isEmpty(body.results)){
-          cb(null, {
-              entity: entityObj,
-              data: null
-          });
-          return;
-        }
-
-        if (_isLookupMiss(response)) {
-            cb(null, {
-                entity: entityObj,
-                data: null
-            });
+        if (_.isNull(body) || _.isEmpty(body.results)) {
+            cb(null, entityObjs.map((entity) => {
+                return {
+                    entity: entity,
+                    data: null
+                };
+            }));
             return;
         }
 
         let threatData = [];
 
-        body.results.forEach(function(result){
-          threatData.push(result.threat_name),
-          threatData.push(result.threat_status)
+        body.results.forEach(function (result) {
+            threatData.push(result.threat_name),
+                threatData.push(result.threat_status)
         });
 
-        // The lookup results returned is an array of lookup objects with the following format
-        cb(null, {
-            // Required: This is the entity object passed into the integration doLookup method
-            entity: entityObj,
-            // Required: An object containing everything you want passed to the template
-            data: {
-                // We are constructing the tags using a custom summary block so no data needs to be passed here
-                summary: threatData,
-                // Data that you want to pass back to the notification window details block
-                details: body
+        Logger.trace({ threatData: threatData }, "ThreatData");
+        Logger.trace({ results: body.results.map(result => result[entityType]) }, 'results of lookup');
+
+        let valueToResults = {};
+        body.results.forEach((result) => {
+            let key = result[entityType].toLowerCase();
+            if (!valueToResults[key]) {
+                valueToResults[key] = [];
             }
+
+            valueToResults[key].push(result);
         });
-    });
-}
-
-function _lookupEntityMD5(entityObj, options, token, cb) {
-    let requestOptions = {
-        uri: options.url + '/api/samples/list/',
-        method: 'POST',
-        headers: {'Authorization': 'Token ' + token},
-        body: {
-              "hash_values": [entityObj.value],
-              "fields": ["md5",
-              "category",
-              "ticore",
-              "ticloud",
-              "summary",
-              "aliases",
-              "file_type",
-              "identification_name",
-              "extracted_file_count",
-          "threat_status",
-          "threat_level",
-          "threat_name",
-          "trust_factor",
-          "classification_reason",
-          "local_first_seen",
-          "local_last_seen"
-        ]
-      },
-        json: true
-    };
-
-
-    requestWithDefaults(requestOptions, function (err, response, body) {
-        let errorObject = _isApiError(err, response, body, entityObj.value);
-        if (errorObject) {
-            cb(errorObject);
-            return;
-        }
-
-        //Logger.debug({data: body.content[0]}, "Logging Body Data");
-        if (_.isNull(body) || _.isEmpty(body.results)){
-          cb(null, {
-              entity: entityObj,
-              data: null
-          });
-          return;
-        }
 
         if (_isLookupMiss(response)) {
-            cb(null, {
-                entity: entityObj,
-                data: null
-            });
+            cb(null, entityObjs.map((entityObj => {
+                return {
+                    entity: entityObj,
+                    data: null
+                };
+            })));
             return;
         }
 
-        let threatData = [];
-
-        body.results.forEach(function(result){
-          threatData.push(result.threat_name),
-          threatData.push(result.threat_status)
-        });
-
         // The lookup results returned is an array of lookup objects with the following format
-        cb(null, {
-            // Required: This is the entity object passed into the integration doLookup method
-            entity: entityObj,
-            // Required: An object containing everything you want passed to the template
-            data: {
-                // We are constructing the tags using a custom summary block so no data needs to be passed here
-                summary: threatData,
-                // Data that you want to pass back to the notification window details block
-                details: body
+        cb(null, entityObjs.map(entity => {
+            let key = entity.value.toLowerCase();
+            if (!valueToResults[key]) {
+                return {
+                    entity: entity,
+                    data: null
+                };
+            } else {
+                return {
+                    entity: entity,
+                    data: {
+                        summary: threatData,
+                        details: valueToResults[key]
+                    }
+                };
             }
-        });
+        }));
     });
 }
 

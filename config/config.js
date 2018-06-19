@@ -1,7 +1,7 @@
 module.exports = {
     name: 'ReversingLabs A1000',
     acronym: 'A1000',
-    logging: {level: 'trace'},
+    logging: { level: 'trace' },
     entityTypes: ['hash'],
     description: 'ReversingLabs A1000 integration for real-time file hash lookups',
     styles: [
@@ -16,7 +16,7 @@ module.exports = {
             file: './template/block.hbs'
         }
     },
-  
+
     request: {
         // Provide the path to your certFile. Leave an empty string to ignore this option.
         // Relative paths are relative to the VT integration's root directory
