@@ -1,7 +1,7 @@
 module.exports = {
     name: 'ReversingLabs A1000',
     acronym: 'A1000',
-    logging: { level: 'trace' },
+    logging: { level: 'info' },
     entityTypes: ['hash'],
     description: 'ReversingLabs A1000 integration for real-time file hash lookups',
     styles: [
@@ -64,33 +64,6 @@ module.exports = {
             default: '',
             type: 'password',
             userCanEdit: false,
-            adminOnly: false
-        },
-        {
-            key: 'lookupSha256',
-            name: 'Lookup SHA256 Hashes',
-            description: 'If checked, the integration will lookup SHA256 Hashes',
-            default: true,
-            type: 'boolean',
-            userCanEdit: true,
-            adminOnly: false
-        },
-        {
-            key: 'lookupMd5',
-            name: 'Lookup MD5 Hashes',
-            description: 'If checked, the integration will lookup MD5 Hashes',
-            default: true,
-            type: 'boolean',
-            userCanEdit: true,
-            adminOnly: false
-        },
-        {
-            key: 'lookupSha1',
-            name: 'Lookup SHA 1 hashes',
-            description: 'If checked, the integration will lookup SHA1 Hashes',
-            default: true,
-            type: 'boolean',
-            userCanEdit: true,
             adminOnly: false
         }
     ]
