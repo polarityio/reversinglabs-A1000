@@ -7,14 +7,18 @@
   "dependencies": {
     "request": "2.83.0",
     "async": "2.5.0",
-    "lodash": "4.17.4"
+    "lodash": "4.17.4",
+    "snyk": "^1.316.1"
   },
   "scripts": {
-    "dev": "./sync.js"
+    "dev": "./sync.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "devDependencies": {
     "node-ssh": "^5.1.1",
     "node-watch": "^0.5.8",
     "scp2": "^0.5.0"
-  }
+  },
+  "snyk": true
 }
