@@ -1,8 +1,8 @@
 {
-  "main": "./integration.js",
   "name": "ReversingLabs-A1000",
+  "version": "3.0.1-beta",
+  "main": "./integration.js",
   "description": "ReversingLabs A1000 integration",
-  "version": "3.0.0-beta",
   "private": true,
   "dependencies": {
     "request": "2.83.0",
