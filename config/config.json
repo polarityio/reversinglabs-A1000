@@ -1,0 +1,56 @@
+{
+  "name": "ReversingLabs A1000",
+  "acronym": "A1000",
+  "defaultColor": "light-pink",
+  "logging": {
+    "level": "info"
+  },
+  "entityTypes": ["hash"],
+  "description": "ReversingLabs A1000 integration for real-time file hash lookups",
+  "styles": ["./styles/a1000.less", "./styles/exfoliate.less"],
+  "block": {
+    "component": {
+      "file": "./component/block.js"
+    },
+    "template": {
+      "file": "./template/block.hbs"
+    }
+  },
+  "request": {
+    "cert": "",
+    "key": "",
+    "passphrase": "",
+    "ca": "",
+    "proxy": "",
+    "rejectUnauthorized": true
+  },
+  "options": [
+    {
+      "key": "url",
+      "name": "A1000 Server",
+      "description": "A1000 Server",
+      "default": "",
+      "type": "text",
+      "userCanEdit": false,
+      "adminOnly": false
+    },
+    {
+      "key": "username",
+      "name": "Username",
+      "description": "ReversingLabs A1000 API Username",
+      "default": "",
+      "type": "text",
+      "userCanEdit": false,
+      "adminOnly": false
+    },
+    {
+      "key": "password",
+      "name": "Password",
+      "description": "ReversingLabs A1000 password",
+      "default": "",
+      "type": "password",
+      "userCanEdit": false,
+      "adminOnly": false
+    }
+  ]
+}

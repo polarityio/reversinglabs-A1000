@@ -1,6 +1,7 @@
 module.exports = {
     name: 'ReversingLabs A1000',
     acronym: 'A1000',
+    defaultColor: 'light-pink',
     logging: { level: 'info' },
     entityTypes: ['hash'],
     description: 'ReversingLabs A1000 integration for real-time file hash lookups',
