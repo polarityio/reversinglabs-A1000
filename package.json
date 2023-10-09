@@ -1,20 +1,15 @@
 {
   "name": "ReversingLabs-A1000",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "main": "./integration.js",
   "description": "ReversingLabs A1000 integration",
   "private": true,
   "dependencies": {
-    "async": "2.5.0",
+    "async": "^3.2.4",
     "lodash": "^4.17.21",
-    "postman-request": "^2.88.1-postman.32"
+    "postman-request": "^2.88.1-postman.33"
   },
   "scripts": {
     "dev": "./sync.js"
-  },
-  "devDependencies": {
-    "node-ssh": "^5.1.1",
-    "node-watch": "^0.5.8",
-    "scp2": "^0.5.0"
   }
 }
