@@ -54,6 +54,8 @@ function createToken(options, cb) {
 function doLookup(entities, options, cb) {
   Logger.debug({ entities, options }, 'Options');
 
+  options.url = options.url.endsWith('/') ? options.url.slice(0, -1) : options.url;
+  
   let lookupResults = [];
 
   createToken(
@@ -291,7 +293,44 @@ function _createJsonErrorObject(msg, pointer, httpCode, code, title, meta) {
   return error;
 }
 
+function validateOptions(userOptions, cb) {
+  let errors = [];
+
+  if (
+    typeof userOptions.url.value !== 'string' ||
+    (typeof userOptions.url.value === 'string' && userOptions.url.value.trim().length === 0)
+  ) {
+    errors.push({
+      key: 'url',
+      message: 'You must provide a valid Spectra Analyze URL'
+    });
+  }
+
+  if (
+    typeof userOptions.password.value !== 'string' ||
+    (typeof userOptions.password.value === 'string' && userOptions.password.value.trim().length === 0)
+  ) {
+    errors.push({
+      key: 'password',
+      message: 'You must provide a valid password'
+    });
+  }
+
+  if (
+    typeof userOptions.username.value !== 'string' ||
+    (typeof userOptions.username.value === 'string' && userOptions.username.value.trim().length === 0)
+  ) {
+    errors.push({
+      key: 'username',
+      message: 'You must provide a Spectra Analyze Username'
+    });
+  }
+
+  cb(null, errors);
+}
+
 module.exports = {
   doLookup,
-  startup
+  startup,
+  validateOptions
 };
