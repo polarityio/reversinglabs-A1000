@@ -4,7 +4,7 @@
   "acronym": "SA",
   "defaultColor": "light-pink",
   "logging": {
-    "level": "trace"
+    "level": "info"
   },
   "entityTypes": [
     "MD5",
