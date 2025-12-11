@@ -1,26 +1,26 @@
-# Polarity ReversingLabs A1000 Integration
+# Polarity ReversingLabs Spectra Analyze Integration
 
-Polarity's ReversingLabs A1000 integration gives users access to automated MD5, SHA1, SHA256 lookups within ReversingLabs on premise system A1000.
+Polarity's ReversingLabs Spectra Analyze integration gives users access to automated MD5, SHA1, SHA256 lookups within ReversingLabs Spectra Analyze system.
 
 ReversingLabs is a world leader in file reputation and analysis with over 3.2 billion files analyzed to date. To get more information on ReversingLabs, please visit www.reversinglabs.com
 
-| ![rl_1](https://user-images.githubusercontent.com/22529325/41663923-8d60b694-7472-11e8-80ef-859a880a60a2.png) | 
-|---|
-|*ReversingLabs A1000 details* |
+| ![rl_1](assets/overlay.png)            | 
+|----------------------------------------|
+| *ReversingLabs Spectra Analyze details* |
 
 ## ReversingLabs Integration Options
 
-### ReversingLabs A1000 Server
+### ReversingLabs' Spectra Analyze URL
 
-Your A1000 server url
+Spectra Analyze Server URL which should include the schema (i.e., https://) and port if required. Defaults to the cloud instance at "https://a1000.reversinglabs.com"
 
-### ReversingLabs A1000 Username
+### Username
 
-Your A1000 username
+ReversingLabs Spectra Analyze Username
 
-### ReversingLabs A1000 Password
+### Password
 
-Your A1000 password
+ReversingLabs Spectra Analyze password for the provided Username
 
 
 ## Installation Instructions
