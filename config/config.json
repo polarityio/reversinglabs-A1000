@@ -1,14 +1,20 @@
 {
   "polarityIntegrationUuid": "c34b3ff0-cce1-11ed-aeee-075d3490155d",
-  "name": "ReversingLabs A1000",
-  "acronym": "A1000",
+  "name": "ReversingLabs Spectra Analyze",
+  "acronym": "SA",
   "defaultColor": "light-pink",
   "logging": {
-    "level": "info"
+    "level": "trace"
   },
-  "entityTypes": ["MD5", "SHA1", "SHA256"],
-  "description": "ReversingLabs A1000 integration for real-time file hash lookups",
-  "styles": ["./styles/a1000.less", "./styles/exfoliate.less"],
+  "entityTypes": [
+    "MD5",
+    "SHA1",
+    "SHA256"
+  ],
+  "description": "ReversingLabs Spectra Analyze integration for real-time file hash lookups",
+  "styles": [
+    "./styles/a1000.less"
+  ],
   "block": {
     "component": {
       "file": "./component/block.js"
@@ -20,9 +26,9 @@
   "options": [
     {
       "key": "url",
-      "name": "A1000 Server",
-      "description": "A1000 Server",
-      "default": "",
+      "name": "ReversingLabs' Spectra Analyze URL",
+      "description": "Spectra Analyze Server URL which should include the schema (i.e., https://) and port if required. Defaults to the cloud instance at \"https://a1000.reversinglabs.com\"",
+      "default": "https://a1000.reversinglabs.com",
       "type": "text",
       "userCanEdit": false,
       "adminOnly": false
@@ -30,7 +36,7 @@
     {
       "key": "username",
       "name": "Username",
-      "description": "ReversingLabs A1000 API Username",
+      "description": "ReversingLabs Spectra Analyze Username",
       "default": "",
       "type": "text",
       "userCanEdit": false,
@@ -39,7 +45,7 @@
     {
       "key": "password",
       "name": "Password",
-      "description": "ReversingLabs A1000 password",
+      "description": "ReversingLabs Spectra Analyze password for the provided Username",
       "default": "",
       "type": "password",
       "userCanEdit": false,
